@@ -6,6 +6,8 @@ tags:
   - cloudflare
 updated: 2026-04-08
 dg-publish: true
+permalink: /notes/wickedhost/60 DNS/Cloudflare DNS 정리/
+title: Cloudflare DNS 정리
 ---
 
 # Cloudflare DNS 정리

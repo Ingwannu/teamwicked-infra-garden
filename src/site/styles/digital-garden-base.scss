@@ -498,16 +498,17 @@ body:has(.content.canvas-page) .sidebar {
     align-items: center;
 
     a {
-        color: var(--text-muted);
+        color: #d67a2e;
         text-decoration: none;
         &:hover {
-            color: var(--text-accent);
+            color: #f29a45;
         }
     }
 
     i, svg {
         font-size: 0.7rem;
-        opacity: 0.5;
+        opacity: 0.8;
+        color: #d67a2e;
         width: var(--dg-backlinks-icon-size);
         height: var(--dg-backlinks-icon-size);
         flex-shrink: 0;

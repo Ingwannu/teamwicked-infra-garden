@@ -6,6 +6,8 @@ tags:
   - oracle
 updated: 2026-04-08
 dg-publish: true
+permalink: /notes/wickedhost/50 비용/Oracle 비용 정리/
+title: Oracle 비용 정리
 ---
 
 # Oracle 비용 정리

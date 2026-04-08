@@ -67,7 +67,23 @@ function getAnchorAttributes(filePath, linkTitle) {
     if (fileName.endsWith(".md") || fileName.endsWith(".canvas")) {
       fullPath = `${startPath}${fileName}`;
     } else {
-      fullPath = `${startPath}${fileName}.md`;
+      const directPath = `${startPath}${fileName}.md`;
+      if (fs.existsSync(directPath)) {
+        fullPath = directPath;
+      } else {
+        const allNotes = fs.readdirSync(startPath, { recursive: true }).filter((entry) => entry.endsWith(".md"));
+        const normalizedTarget = fileName.trim().toLowerCase();
+        const matched = allNotes.find((entry) => {
+          const stem = entry.replace(/\.md$/i, "");
+          const base = stem.split("/").pop();
+          return stem.toLowerCase() === normalizedTarget || base.toLowerCase() === normalizedTarget;
+        });
+        if (matched) {
+          fullPath = `${startPath}${matched}`;
+        } else {
+          fullPath = directPath;
+        }
+      }
     }
     const file = fs.readFileSync(fullPath, "utf8");
     const frontMatter = matter(file, matterOptions);
@@ -356,7 +372,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("link", function(str) {
     return (
       str &&
-      str.replace(/\[\[(.*?\|.*?)\]\]/g, function(match, p1) {
+      str.replace(/\[\[(.*?)\]\]/g, function(match, p1) {
         //Check if it is an embedded excalidraw drawing or mathjax javascript
         if (p1.indexOf("],[") > -1 || p1.indexOf('"$"') > -1) {
           return match;

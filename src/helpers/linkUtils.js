@@ -1,4 +1,4 @@
-const wikiLinkRegex = /\[\[(.*?\|.*?)\]\]/g;
+const wikiLinkRegex = /\[\[(.*?)\]\]/g;
 const internalLinkRegex = /href="\/(.*?)"/g;
 // Match iframe src for canvas embedded files (internal links only, not external URLs)
 // Format: <iframe src="/path/" class="canvas-file-iframe" ...>
@@ -133,7 +133,15 @@ async function getGraph(data) {
       noteIcon: v.data.noteIcon || process.env.NOTE_ICON_DEFAULT,
       hide: v.data.hideInGraph || false,
     };
+    const titleAlias = (v.data.title || v.fileSlug || "").trim();
+    const baseNameAlias = parts[parts.length - 1].trim();
     stemURLs[fpath] = v.url;
+    if (titleAlias) {
+      stemURLs[titleAlias] = v.url;
+    }
+    if (baseNameAlias) {
+      stemURLs[baseNameAlias] = v.url;
+    }
     if (
       v.data["dg-home"] ||
       (v.data.tags && v.data.tags.indexOf("gardenEntry") > -1)
