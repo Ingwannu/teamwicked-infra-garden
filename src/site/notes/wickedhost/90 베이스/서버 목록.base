@@ -1,0 +1,100 @@
+properties:
+  name:
+    displayName: 이름
+  role:
+    displayName: 역할
+  architecture:
+    displayName: 아키텍처
+  shape:
+    displayName: Shape
+  public_ip:
+    displayName: 공인 IP
+  private_ip:
+    displayName: 사설 IP
+  state:
+    displayName: 상태
+  tags:
+    displayName: 태그
+  updated:
+    displayName: 문서 업데이트
+  file.name:
+    displayName: 문서명
+  file.folder:
+    displayName: 폴더
+  file.backlinks:
+    displayName: 백링크
+  file.links:
+    displayName: 링크
+  file.mtime:
+    displayName: 파일 수정시각
+views:
+  - type: table
+    name: 서버 문서
+    filters:
+      and:
+        - file.folder == "20 서버"
+    order:
+      - name
+      - role
+      - architecture
+      - shape
+      - public_ip
+      - private_ip
+      - state
+      - updated
+      - file.backlinks
+  - type: table
+    name: 서비스 문서
+    filters:
+      and:
+        - file.folder == "30 서비스"
+    order:
+      - file.name
+      - tags
+      - updated
+      - file.links
+      - file.backlinks
+  - type: table
+    name: 운영 문서
+    filters:
+      or:
+        - file.folder == "40 운영"
+        - file.folder == "50 비용"
+        - file.folder == "60 DNS"
+        - file.folder == "70 장애대응"
+        - file.folder == "10 인프라"
+        - file.folder == "00 홈"
+    order:
+      - file.name
+      - tags
+      - updated
+      - file.links
+      - file.backlinks
+  - type: cards
+    name: 서버 카드
+    filters:
+      and:
+        - file.folder == "20 서버"
+    order:
+      - name
+      - role
+      - architecture
+      - public_ip
+      - state
+  - type: list
+    name: 링크 많은 문서
+    filters:
+      or:
+        - file.folder == "00 홈"
+        - file.folder == "10 인프라"
+        - file.folder == "20 서버"
+        - file.folder == "30 서비스"
+        - file.folder == "40 운영"
+        - file.folder == "50 비용"
+        - file.folder == "60 DNS"
+        - file.folder == "70 장애대응"
+    order:
+      - file.name
+      - file.links
+      - file.backlinks
+      - updated
