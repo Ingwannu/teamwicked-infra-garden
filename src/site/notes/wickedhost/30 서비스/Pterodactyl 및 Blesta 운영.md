@@ -190,6 +190,132 @@ title: Pterodactyl 및 Blesta 운영
 - `pwaforblueprint`
   - PWA 관련
 
+## `wicked` 커스터마이징 상세
+
+### 결론
+
+- 현재 패널에 `wicked`라는 **별도 Blueprint 익스텐션 폴더는 없음**
+- 실제 구조는
+  - `nebula` 확장
+  - `wicked_mode.php` 프리셋
+  - 프론트엔드 `wickedLabel` 라벨 레이어
+  - `wickednebular::...` 설정 키
+  의 조합임
+- 즉 운영상 `wicked`는 독립 플러그인이 아니라 **TeamWicked용 Nebula 프리셋/브랜딩 레이어**로 이해하는 것이 맞음
+
+### 실제 파일 위치
+
+- 대시보드 래퍼
+  - `/var/www/pterodactyl/.blueprint/extensions/nebula/wrappers/dashboard.blade.php`
+- Wicked 프리셋
+  - `/var/www/pterodactyl/.blueprint/extensions/nebula/private/wicked_mode.php`
+- Nebula 관리자 컨트롤러
+  - `/var/www/pterodactyl/app/Http/Controllers/Admin/Extensions/nebula/nebulaExtensionController.php`
+- 프론트 라벨
+  - `/var/www/pterodactyl/resources/scripts/lib/wickedLocale.ts`
+- 프론트 라우트 주입
+  - `/var/www/pterodactyl/resources/scripts/blueprint/extends/routers/routes.ts`
+
+### `wicked_mode`가 실제로 하는 일
+
+- `wicked_mode.php`는 Nebula 설정값 묶음을 강제로 덮어쓰는 프리셋 파일임
+- 대표적으로 아래 항목을 고정함
+  - 대시보드 / 사이드바 / 인증 페이지 팔레트 색상
+  - 배경 패턴
+  - 상태 색상
+  - 서버 목록 표시 방식
+  - 라운드 값
+  - 사이드바 전체 너비 모드
+  - 로고 경로
+- 로고는 고정으로
+  - `/extensions/nebula/libraries/assets/mainlogo.png`
+  를 사용
+- 즉 `wicked_mode`를 켜면 Nebula 일반 테마 편집기에서 바꿀 수 있는 일부 값이 실제로는 다시 preset 값으로 잠김
+
+### `wicked_mode` 잠금 항목
+
+현재 preset이 사실상 잠그는 범주는 아래와 같음.
+
+- `background_*`
+- `auth_background_*`
+- `palette_dashboard_*`
+- `palette_sidebar_*`
+- `palette_auth_*`
+- `palette_status_*`
+
+즉 운영자가 Nebula UI에서 팔레트만 바꿔도, `wicked_mode=1`이면 다시 TeamWicked preset이 우선함.
+
+### 화면에 보이는 WICKED 흔적
+
+- 대시보드 footer에 `Powered by WICKED`
+- 인증 화면 워터마크에 `WICKED`
+- 네비게이션/페이지 일부 라벨은 `wickedLabel(...)`을 통해 커스텀 문구가 들어감
+- 로그인/대시보드/콘솔/데이터베이스/네트워크/사용자/백업 등 주요 화면에 `wickedLocale`이 광범위하게 들어가 있음
+
+즉 단순 로고 교체가 아니라, **프론트 텍스트와 테마 색상까지 같이 바뀌는 구조**임.
+
+### 설정 키 네임스페이스
+
+운영 중 실제로 확인된 TeamWicked 관련 설정 키는 아래와 같음.
+
+- `wickednebular::auth_customlogo`
+- `wickednebular::background_image`
+- `wickednebular::border_radius`
+- `wickednebular::icon_fallback`
+- `wickednebular::icon_scale`
+- `wickednebular::init`
+- `wickednebular::keyboard_shortcuts`
+- `wickednebular::server_list`
+- `wickednebular::sidebar_customlogo`
+- `wickednebular::sidebar_full`
+- `wickednebular::watermark`
+- `wickednebular::watermark_auth`
+
+운영 해석:
+
+- 일반 Blueprint 확장은 보통 `<extension>::...` 키를 쓰는데
+- TeamWicked 쪽은 `wickednebular::...` 별도 네임스페이스도 함께 쓰고 있음
+- 따라서 테마가 안 바뀌거나 일부 화면만 원복될 때는 `nebula::...`만 보면 부족할 수 있음
+
+### 프론트 라우트와 메뉴 노출
+
+실제 패널 프론트 라우트는 `/resources/scripts/blueprint/extends/routers/routes.ts`에서 주입됨.
+
+계정 메뉴:
+
+- `/social` -> `sociallogin`
+
+서버 메뉴:
+
+- `/modpacks` -> `modpackinstaller`
+- `/subdomains` -> `subdomainmanager`
+- `/environment-variables` -> `environmentvariables`
+- `/mclogs` -> `mclogs`
+- `/minecraft/versions` -> `versionchanger`
+- `/minecraft/players` -> `minecraftplayermanager`
+- `/mcplugins` -> `mcplugins`
+- `/mcmods` -> `mcmods`
+
+즉 "익스텐션이 설치돼 있는데 메뉴가 안 보인다"는 문제는 다음 셋 중 하나로 좁혀짐.
+
+- 확장 라우트 주입 실패
+- 권한(permission) 부족
+- Nebula / sidebar / wrapper 렌더링 문제
+
+### 운영상 실제로 조심할 점
+
+- `wicked_mode`가 켜져 있으면 Nebula 편집기에서 바꾼 색상/배경이 일부 먹히지 않는 것이 정상일 수 있음
+- UI 깨짐은 패널 본체보다
+  - `nebula wrapper`
+  - `wicked_mode.php`
+  - `wickedLocale`
+  쪽을 먼저 의심하는 편이 빠름
+- 패널 업데이트/Blueprint 재빌드 후 WICKED 브랜딩이 빠지면 아래부터 확인
+  - `dashboard.blade.php`가 `wicked_mode.php`를 require 하는지
+  - `mainlogo.png` 경로가 살아 있는지
+  - `wickednebular::...` 설정 키가 남아 있는지
+  - `wickedLabel` 라벨 치환이 프론트 번들에 반영됐는지
+
 ## 리소스 / 자동화 / 파일 편의 계열
 
 - `resourcealerts`
