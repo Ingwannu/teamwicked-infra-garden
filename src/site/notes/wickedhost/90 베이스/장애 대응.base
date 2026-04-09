@@ -1,0 +1,51 @@
+properties:
+  tags:
+    displayName: 태그
+  updated:
+    displayName: 문서 업데이트
+  file.name:
+    displayName: 문서명
+  file.folder:
+    displayName: 폴더
+  file.links:
+    displayName: 링크
+  file.backlinks:
+    displayName: 백링크
+  file.mtime:
+    displayName: 파일 수정시각
+views:
+  - type: table
+    name: 장애 대응 문서
+    filters:
+      or:
+        - file.folder == "70 장애대응"
+        - file.folder == "40 운영"
+    order:
+      - file.name
+      - tags
+      - updated
+      - file.links
+      - file.backlinks
+      - file.mtime
+  - type: list
+    name: 체크리스트 핵심 문서
+    filters:
+      or:
+        - file.folder == "70 장애대응"
+        - file.folder == "60 DNS"
+        - file.folder == "30 서비스"
+    order:
+      - file.name
+      - file.links
+      - file.backlinks
+      - updated
+  - type: cards
+    name: 운영 카드
+    filters:
+      or:
+        - file.folder == "70 장애대응"
+        - file.folder == "40 운영"
+    order:
+      - file.name
+      - updated
+      - tags

@@ -1,0 +1,49 @@
+properties:
+  tags:
+    displayName: 태그
+  updated:
+    displayName: 문서 업데이트
+  file.name:
+    displayName: 문서명
+  file.folder:
+    displayName: 폴더
+  file.links:
+    displayName: 링크
+  file.backlinks:
+    displayName: 백링크
+  file.mtime:
+    displayName: 파일 수정시각
+views:
+  - type: table
+    name: 비용 문서
+    filters:
+      and:
+        - file.folder == "50 비용"
+    order:
+      - file.name
+      - tags
+      - updated
+      - file.links
+      - file.backlinks
+      - file.mtime
+  - type: cards
+    name: 비용 카드
+    filters:
+      and:
+        - file.folder == "50 비용"
+    order:
+      - file.name
+      - updated
+      - tags
+  - type: list
+    name: 비용 관련 링크 많은 문서
+    filters:
+      or:
+        - file.folder == "50 비용"
+        - file.folder == "20 서버"
+        - file.folder == "40 운영"
+    order:
+      - file.name
+      - file.links
+      - file.backlinks
+      - updated

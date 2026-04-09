@@ -1,0 +1,53 @@
+properties:
+  tags:
+    displayName: 태그
+  updated:
+    displayName: 문서 업데이트
+  public_ip:
+    displayName: 공인 IP
+  private_ip:
+    displayName: 사설 IP
+  state:
+    displayName: 상태
+  file.name:
+    displayName: 문서명
+  file.folder:
+    displayName: 폴더
+  file.links:
+    displayName: 링크
+  file.backlinks:
+    displayName: 백링크
+views:
+  - type: table
+    name: DNS 운영 문서
+    filters:
+      or:
+        - file.folder == "60 DNS"
+        - file.folder == "30 서비스"
+    order:
+      - file.name
+      - tags
+      - updated
+      - file.links
+      - file.backlinks
+  - type: table
+    name: 관련 서버
+    filters:
+      and:
+        - file.folder == "20 서버"
+    order:
+      - file.name
+      - public_ip
+      - private_ip
+      - state
+      - file.backlinks
+  - type: cards
+    name: DNS 카드
+    filters:
+      or:
+        - file.folder == "60 DNS"
+        - file.folder == "30 서비스"
+    order:
+      - file.name
+      - updated
+      - tags
